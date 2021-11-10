@@ -1,0 +1,9 @@
+{
+	"name": "ZentraAPI",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ebd4ef4b-67c1-4792-a6be-ab5491126ea7",
+		"tenantId": "22177130-642f-41d9-9211-74237ad5687d"
+	}
+}

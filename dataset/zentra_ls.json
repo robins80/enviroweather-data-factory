@@ -1,0 +1,19 @@
+{
+	"name": "zentra_ls",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "zentra_function",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "/api/APICall"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
