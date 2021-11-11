@@ -106,7 +106,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "Zentra_JSON",
+									"referenceName": "Zentra_JSON_copy1",
 									"type": "DatasetReference"
 								}
 							]

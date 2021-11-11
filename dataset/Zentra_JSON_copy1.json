@@ -1,5 +1,5 @@
 {
-	"name": "Zentra_JSON",
+	"name": "Zentra_JSON_copy1",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "zentra_blob",
@@ -10,7 +10,11 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "zentra.json",
+				"fileName": {
+					"value": "@concat('zentra', variables('id'), '.json')",
+					"type": "Expression"
+				},
+				"folderPath": "results",
 				"container": "zentra"
 			}
 		},
