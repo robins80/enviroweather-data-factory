@@ -10,7 +10,11 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "zentra.json",
+				"fileName": {
+					"value": "@concat('zentra', variables('id'), '.json')",
+					"type": "Expression"
+				},
+				"folderPath": "results",
 				"container": "zentra"
 			}
 		},
