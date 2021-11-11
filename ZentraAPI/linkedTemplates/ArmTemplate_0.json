@@ -3060,7 +3060,7 @@
 								"value": "@activity('get_params').output.value",
 								"type": "Expression"
 							},
-							"isSequential": true,
+							"isSequential": false,
 							"activities": [
 								{
 									"name": "Copy data1",
