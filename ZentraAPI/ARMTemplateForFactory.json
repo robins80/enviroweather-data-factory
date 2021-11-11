@@ -1,0 +1,3347 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ZentraAPI"
+		},
+		"Zentra_Function_ls_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'Zentra_Function_ls'"
+		},
+		"zentra_blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'zentra_blob'"
+		},
+		"Zentra_Function_ls_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://zentra-api-read.azurewebsites.net"
+		},
+		"zentra_function_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://zentra-api-read.azurewebsites.net"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/File-Params-Zentra-API-to-PostgeSQL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "get_params",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "param_json_source",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "for_each",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_params",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_params').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "JsonSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "POST",
+												"requestBody": {
+													"value": "@{string(item())}",
+													"type": "Expression"
+												},
+												"requestTimeout": ""
+											},
+											"formatSettings": {
+												"type": "JsonReadSettings"
+											}
+										},
+										"sink": {
+											"type": "JsonSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "JsonWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "zentra_ls",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Zentra_JSON",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								},
+								{
+									"name": "Wait1",
+									"type": "Wait",
+									"dependsOn": [
+										{
+											"activity": "Copy data1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 60
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-11-04T13:58:15Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/param_json_source')]",
+				"[concat(variables('factoryId'), '/datasets/zentra_ls')]",
+				"[concat(variables('factoryId'), '/datasets/Zentra_JSON')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/testing')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "get_params",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "param_json_source",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "for_each",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "get_params",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('get_params').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Set variable2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "JsonSource",
+											"storeSettings": {
+												"type": "HttpReadSettings",
+												"requestMethod": "POST",
+												"requestBody": {
+													"value": "@{string(item())}",
+													"type": "Expression"
+												},
+												"requestTimeout": ""
+											},
+											"formatSettings": {
+												"type": "JsonReadSettings"
+											}
+										},
+										"sink": {
+											"type": "JsonSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "JsonWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "zentra_ls",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Zentra_JSON_copy1",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								},
+								{
+									"name": "Set variable1",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "increment",
+										"value": {
+											"value": "@string(add(int(variables('id')), 1))",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set variable2",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set variable1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "id",
+										"value": {
+											"value": "@variables('increment')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Wait1",
+									"type": "Wait",
+									"dependsOn": [
+										{
+											"activity": "Copy data1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 55
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"id": {
+						"type": "String",
+						"defaultValue": "0"
+					},
+					"increment": {
+						"type": "String",
+						"defaultValue": "1"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-11-04T13:58:15Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/param_json_source')]",
+				"[concat(variables('factoryId'), '/datasets/zentra_ls')]",
+				"[concat(variables('factoryId'), '/datasets/Zentra_JSON_copy1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Zentra_JSON')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "zentra_blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "zentra.json",
+						"container": "zentra"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"pagination": {
+							"type": "object",
+							"properties": {
+								"per_page": {
+									"type": "integer"
+								},
+								"page_num": {
+									"type": "integer"
+								},
+								"next_url": {
+									"type": "string"
+								},
+								"max_mrid": {
+									"type": "integer"
+								},
+								"page_num_readings": {
+									"type": "integer"
+								},
+								"page_num_outputs": {
+									"type": "integer"
+								},
+								"page_start_date": {
+									"type": "string"
+								},
+								"page_end_date": {
+									"type": "string"
+								},
+								"page_start_mrid": {
+									"type": "integer"
+								},
+								"page_end_mrid": {
+									"type": "integer"
+								}
+							}
+						},
+						"data": {
+							"type": "object",
+							"properties": {
+								"Air Temperature": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Atmospheric Pressure": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Battery Percent": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "null"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Battery Voltage": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "null"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Gust Speed": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Leaf Wetness": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Leaf Wetness (high)": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Lightning Activity": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Lightning Distance": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Logger Temperature": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Max Precip Rate": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Precipitation": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"RH Sensor Temp": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Reference Pressure": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Soil Temperature": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Solar Radiation": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"VPD": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Vapor Pressure": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Water Content": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Wetness Level": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Wind Direction": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Wind Speed": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"X-axis Level": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Y-axis Level": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/zentra_blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Zentra_JSON_copy1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "zentra_blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat('zentra', variables('id'), '.json')",
+							"type": "Expression"
+						},
+						"folderPath": "results",
+						"container": "zentra"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"pagination": {
+							"type": "object",
+							"properties": {
+								"per_page": {
+									"type": "integer"
+								},
+								"page_num": {
+									"type": "integer"
+								},
+								"next_url": {
+									"type": "string"
+								},
+								"max_mrid": {
+									"type": "integer"
+								},
+								"page_num_readings": {
+									"type": "integer"
+								},
+								"page_num_outputs": {
+									"type": "integer"
+								},
+								"page_start_date": {
+									"type": "string"
+								},
+								"page_end_date": {
+									"type": "string"
+								},
+								"page_start_mrid": {
+									"type": "integer"
+								},
+								"page_end_mrid": {
+									"type": "integer"
+								}
+							}
+						},
+						"data": {
+							"type": "object",
+							"properties": {
+								"Air Temperature": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Atmospheric Pressure": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Battery Percent": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "null"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Battery Voltage": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "null"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Gust Speed": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Leaf Wetness": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Leaf Wetness (high)": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Lightning Activity": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Lightning Distance": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Logger Temperature": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Max Precip Rate": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Precipitation": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"RH Sensor Temp": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Reference Pressure": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Soil Temperature": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Solar Radiation": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"VPD": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Vapor Pressure": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Water Content": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Wetness Level": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Wind Direction": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Wind Speed": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"X-axis Level": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								},
+								"Y-axis Level": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"metadata": {
+												"type": "object",
+												"properties": {
+													"device_sn": {
+														"type": "string"
+													},
+													"device_name": {
+														"type": "string"
+													},
+													"port_number": {
+														"type": "integer"
+													},
+													"sensor_sn": {
+														"type": "string"
+													},
+													"sensor_name": {
+														"type": "string"
+													},
+													"units": {
+														"type": "string"
+													}
+												}
+											},
+											"readings": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"timestamp_utc": {
+															"type": "integer"
+														},
+														"datetime": {
+															"type": "string"
+														},
+														"tz_offset": {
+															"type": "integer"
+														},
+														"value": {
+															"type": "number"
+														},
+														"precision": {
+															"type": "integer"
+														},
+														"mrid": {
+															"type": "integer"
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/zentra_blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/param_json_source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "zentra_blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "test_blob_content.json",
+						"folderPath": "parameters",
+						"container": "zentra"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"name": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/zentra_blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/zentra_ls')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "zentra_function",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "/api/APICall"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/zentra_function')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Zentra_Function_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFunction",
+				"typeProperties": {
+					"functionAppUrl": "[parameters('Zentra_Function_ls_properties_typeProperties_functionAppUrl')]",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "[parameters('Zentra_Function_ls_functionKey')]"
+					},
+					"authentication": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/zentra_blob')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('zentra_blob_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/zentra_function')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('zentra_function_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

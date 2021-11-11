@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "ZentraAPI"
+		},
+		"Zentra_Function_ls_functionKey": {
+			"value": ""
+		},
+		"zentra_blob_connectionString": {
+			"value": ""
+		},
+		"Zentra_Function_ls_properties_typeProperties_functionAppUrl": {
+			"value": "https://zentra-api-read.azurewebsites.net"
+		},
+		"zentra_function_properties_typeProperties_url": {
+			"value": "https://zentra-api-read.azurewebsites.net"
+		}
+	}
+}

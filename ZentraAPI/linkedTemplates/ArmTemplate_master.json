@@ -1,0 +1,70 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ZentraAPI"
+		},
+		"Zentra_Function_ls_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'Zentra_Function_ls'"
+		},
+		"zentra_blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'zentra_blob'"
+		},
+		"Zentra_Function_ls_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://zentra-api-read.azurewebsites.net"
+		},
+		"zentra_function_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://zentra-api-read.azurewebsites.net"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "ZentraAPI_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"Zentra_Function_ls_functionKey": {
+						"value": "[parameters('Zentra_Function_ls_functionKey')]"
+					},
+					"zentra_blob_connectionString": {
+						"value": "[parameters('zentra_blob_connectionString')]"
+					},
+					"Zentra_Function_ls_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('Zentra_Function_ls_properties_typeProperties_functionAppUrl')]"
+					},
+					"zentra_function_properties_typeProperties_url": {
+						"value": "[parameters('zentra_function_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
