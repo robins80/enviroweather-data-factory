@@ -69,7 +69,12 @@
 									"type": "JsonSource",
 									"storeSettings": {
 										"type": "HttpReadSettings",
-										"requestMethod": "GET"
+										"requestMethod": "POST",
+										"requestBody": {
+											"value": "@{string(item())}",
+											"type": "Expression"
+										},
+										"requestTimeout": ""
 									},
 									"formatSettings": {
 										"type": "JsonReadSettings"
@@ -98,22 +103,6 @@
 									"type": "DatasetReference"
 								}
 							]
-						},
-						{
-							"name": "Wait1",
-							"type": "Wait",
-							"dependsOn": [
-								{
-									"activity": "Copy data1",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"waitTimeInSeconds": 60
-							}
 						}
 					]
 				}
