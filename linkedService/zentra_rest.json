@@ -1,0 +1,12 @@
+{
+	"name": "zentra_rest",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://zentra-api-read.azurewebsites.net",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
