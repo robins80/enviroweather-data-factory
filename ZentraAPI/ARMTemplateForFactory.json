@@ -22,10 +22,6 @@
 		"zentra_function_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://zentra-api-read.azurewebsites.net"
-		},
-		"zentra_rest_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://zentra-api-read.azurewebsites.net"
 		}
 	},
 	"variables": {
@@ -106,12 +102,7 @@
 											"type": "JsonSource",
 											"storeSettings": {
 												"type": "HttpReadSettings",
-												"requestMethod": "POST",
-												"requestBody": {
-													"value": "@{string(item())}",
-													"type": "Expression"
-												},
-												"requestTimeout": ""
+												"requestMethod": "GET"
 											},
 											"formatSettings": {
 												"type": "JsonReadSettings"
@@ -3341,21 +3332,6 @@
 				"type": "HttpServer",
 				"typeProperties": {
 					"url": "[parameters('zentra_function_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/zentra_rest')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('zentra_rest_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": true,
 					"authenticationType": "Anonymous"
 				}

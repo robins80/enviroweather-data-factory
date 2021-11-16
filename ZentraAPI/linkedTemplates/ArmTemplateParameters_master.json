@@ -17,9 +17,6 @@
 		"zentra_function_properties_typeProperties_url": {
 			"value": "https://zentra-api-read.azurewebsites.net"
 		},
-		"zentra_rest_properties_typeProperties_url": {
-			"value": "https://zentra-api-read.azurewebsites.net"
-		},
 		"containerUri": {
 			"value": ""
 		},
