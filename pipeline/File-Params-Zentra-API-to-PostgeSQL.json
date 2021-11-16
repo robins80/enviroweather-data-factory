@@ -69,12 +69,7 @@
 									"type": "JsonSource",
 									"storeSettings": {
 										"type": "HttpReadSettings",
-										"requestMethod": "POST",
-										"requestBody": {
-											"value": "@{string(item())}",
-											"type": "Expression"
-										},
-										"requestTimeout": ""
+										"requestMethod": "GET"
 									},
 									"formatSettings": {
 										"type": "JsonReadSettings"
