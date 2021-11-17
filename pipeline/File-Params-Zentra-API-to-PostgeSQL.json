@@ -53,7 +53,7 @@
 					"isSequential": false,
 					"activities": [
 						{
-							"name": "Copy data1",
+							"name": "Copy API data to blob",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -100,6 +100,1483 @@
 							"outputs": [
 								{
 									"referenceName": "Zentra_JSON",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "Copy blob to database",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Copy API data to blob",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "JsonSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "JsonReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzurePostgreSQLSink",
+									"writeBatchSize": 1000000,
+									"writeBatchTimeout": "00:30:00",
+									"writeMethod": "CopyCommand"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "$['data']['Air Temperature'][0]['metadata']['device_sn']"
+											},
+											"sink": {
+												"name": "station_sn",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Atmospheric Pressure'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Percent'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Battery Voltage'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Gust Speed'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Leaf Wetness (high)'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Activity'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Lightning Distance'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Logger Temperature'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Max Precip Rate'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Precipitation'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['RH Sensor Temp'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Reference Pressure'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Soil Temperature'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Solar Radiation'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['VPD'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Vapor Pressure'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Water Content'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wetness Level'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Direction'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Wind Speed'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['X-axis Level'][0]['readings'][0]['mrid']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['metadata']['device_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['metadata']['device_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['metadata']['port_number']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['metadata']['sensor_sn']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['metadata']['sensor_name']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['metadata']['units']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['readings'][0]['timestamp_utc']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['readings'][0]['datetime']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['readings'][0]['tz_offset']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['readings'][0]['value']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['readings'][0]['precision']"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['Y-axis Level'][0]['readings'][0]['mrid']"
+											}
+										}
+									],
+									"collectionReference": "$['data']['Air Temperature'][0]['readings']"
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "Zentra_JSON",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "weather_database_dataset",
 									"type": "DatasetReference"
 								}
 							]
