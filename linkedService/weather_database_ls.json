@@ -6,7 +6,7 @@
 		"type": "AzurePostgreSql",
 		"typeProperties": {
 			"connectionString": "host=enviroweather-pgserver-test.postgres.database.azure.com;port=5432;database=weather_data;uid=ewadmin@enviroweather-pgserver-test;encryptionmethod=1;validateservercertificate=0",
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDBDNTRCMzA3LTE2QjgtNDQ4NS1BM0VFLUYyRjk0RTEzMUQ3RV9lMzdkZjExZC1hODIzLTQ3YzItYWJhYS1iZDg5ZmM1NDkzZDAiDQp9"
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDBDNTRCMzA3LTE2QjgtNDQ4NS1BM0VFLUYyRjk0RTEzMUQ3RV8xYmEwYzAyOC0yZWNiLTRkZWMtOTBkMi0xZDVjZjI0YmY3OGEiDQp9"
 		}
 	}
 }
