@@ -29,7 +29,7 @@
 		],
 		"typeProperties": {
 			"schema": "public",
-			"table": "weather_data"
+			"table": "raw_data"
 		}
 	}
 }
