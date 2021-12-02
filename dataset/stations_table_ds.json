@@ -1,0 +1,77 @@
+{
+	"name": "stations_table_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "enviroweather_db_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "identifier",
+				"type": "text",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "vendor",
+				"type": "text",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "api_token",
+				"type": "text",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "api_key",
+				"type": "text",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "api_sec",
+				"type": "text",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "api_provider",
+				"type": "text",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "description",
+				"type": "text",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "api_url",
+				"type": "text",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "update_freq",
+				"type": "integer",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "public",
+			"table": "stations"
+		}
+	}
+}
