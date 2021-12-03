@@ -71,7 +71,7 @@
 		],
 		"typeProperties": {
 			"schema": "public",
-			"table": "stations"
+			"table": "station_info"
 		}
 	}
 }
