@@ -46,8 +46,8 @@
 					"isSequential": false,
 					"activities": [
 						{
-							"name": "Copy API data to blob",
-							"type": "Copy",
+							"name": "Station Poll",
+							"type": "AzureFunctionActivity",
 							"dependsOn": [],
 							"policy": {
 								"timeout": "7.00:00:00",
@@ -58,44 +58,14 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"source": {
-									"type": "JsonSource",
-									"storeSettings": {
-										"type": "HttpReadSettings",
-										"requestMethod": "POST",
-										"requestBody": {
-											"value": "@{string(item())}",
-											"type": "Expression"
-										},
-										"requestTimeout": ""
-									},
-									"formatSettings": {
-										"type": "JsonReadSettings"
-									}
-								},
-								"sink": {
-									"type": "JsonSink",
-									"storeSettings": {
-										"type": "AzureBlobStorageWriteSettings"
-									},
-									"formatSettings": {
-										"type": "JsonWriteSettings"
-									}
-								},
-								"enableStaging": false
+								"functionName": "APICall",
+								"method": "POST",
+								"body": "@{string(item())}"
 							},
-							"inputs": [
-								{
-									"referenceName": "zentra_ls",
-									"type": "DatasetReference"
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "Zentra_JSON",
-									"type": "DatasetReference"
-								}
-							]
+							"linkedServiceName": {
+								"referenceName": "Zentra_Function_ls",
+								"type": "LinkedServiceReference"
+							}
 						}
 					]
 				}
