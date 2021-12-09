@@ -8,6 +8,9 @@
 		"Zentra_Function_ls_functionKey": {
 			"value": ""
 		},
+		"enviroweather_db_ls_connectionString": {
+			"value": ""
+		},
 		"zentra_blob_connectionString": {
 			"value": ""
 		},

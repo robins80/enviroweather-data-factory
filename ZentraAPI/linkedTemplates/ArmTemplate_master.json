@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'functionKey' of 'Zentra_Function_ls'"
 		},
+		"enviroweather_db_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'enviroweather_db_ls'"
+		},
 		"zentra_blob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'zentra_blob'"
@@ -52,6 +56,9 @@
 					},
 					"Zentra_Function_ls_functionKey": {
 						"value": "[parameters('Zentra_Function_ls_functionKey')]"
+					},
+					"enviroweather_db_ls_connectionString": {
+						"value": "[parameters('enviroweather_db_ls_connectionString')]"
 					},
 					"zentra_blob_connectionString": {
 						"value": "[parameters('zentra_blob_connectionString')]"
