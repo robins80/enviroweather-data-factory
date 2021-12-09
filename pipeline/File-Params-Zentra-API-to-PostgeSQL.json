@@ -43,7 +43,7 @@
 						"value": "@activity('get_params').output.value",
 						"type": "Expression"
 					},
-					"isSequential": false,
+					"isSequential": true,
 					"activities": [
 						{
 							"name": "Station Poll",
@@ -60,12 +60,110 @@
 							"typeProperties": {
 								"functionName": "APICall",
 								"method": "POST",
-								"body": "@{string(item())}"
+								"body": {
+									"value": "@{string(item())}",
+									"type": "Expression"
+								}
 							},
 							"linkedServiceName": {
 								"referenceName": "Zentra_Function_ls",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"name": "Copy raw data to raw_data table",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Station Poll",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "JsonSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "JsonReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzurePostgreSQLSink",
+									"writeBatchSize": 1000000,
+									"writeBatchTimeout": "00:30:00",
+									"writeMethod": "CopyCommand"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "$['identifier']"
+											},
+											"sink": {
+												"name": "identifier",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['vendor']"
+											},
+											"sink": {
+												"name": "vendor",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['poll_date']"
+											},
+											"sink": {
+												"name": "poll_date",
+												"type": "DateTime"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']"
+											},
+											"sink": {
+												"name": "data",
+												"type": "String"
+											}
+										}
+									],
+									"collectionReference": "",
+									"mapComplexValuesToString": true
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "raw_data",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "raw_data_table_ds",
+									"type": "DatasetReference"
+								}
+							]
 						}
 					]
 				}

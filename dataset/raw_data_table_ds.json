@@ -1,0 +1,16 @@
+{
+	"name": "raw_data_table_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "enviroweather_db_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "public",
+			"table": "raw_data"
+		}
+	}
+}
