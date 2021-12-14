@@ -113,7 +113,7 @@
 									"mappings": [
 										{
 											"source": {
-												"path": "$['identifier']"
+												"path": "$['sn']"
 											},
 											"sink": {
 												"name": "identifier",
