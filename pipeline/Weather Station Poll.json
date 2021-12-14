@@ -73,14 +73,7 @@
 						{
 							"name": "Copy raw data to raw_data table",
 							"type": "Copy",
-							"dependsOn": [
-								{
-									"activity": "Station Poll",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
+							"dependsOn": [],
 							"policy": {
 								"timeout": "7.00:00:00",
 								"retry": 0,
@@ -164,11 +157,66 @@
 									"type": "DatasetReference"
 								}
 							]
+						},
+						{
+							"name": "raw_data_check",
+							"description": "Check to see if raw_data.json exists.",
+							"type": "GetMetadata",
+							"dependsOn": [
+								{
+									"activity": "Station Poll",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "raw_data",
+									"type": "DatasetReference"
+								},
+								"fieldList": [
+									"exists"
+								],
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							}
+						},
+						{
+							"name": "Check_metadata",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
 			}
 		],
+		"variables": {
+			"fileExists": {
+				"type": "Boolean",
+				"defaultValue": false
+			}
+		},
 		"annotations": [],
 		"lastPublishTime": "2021-11-04T13:58:15Z"
 	},
