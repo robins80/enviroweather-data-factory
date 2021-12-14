@@ -71,94 +71,6 @@
 							}
 						},
 						{
-							"name": "Copy raw data to raw_data table",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "JsonSource",
-									"storeSettings": {
-										"type": "AzureBlobStorageReadSettings",
-										"recursive": true,
-										"enablePartitionDiscovery": false
-									},
-									"formatSettings": {
-										"type": "JsonReadSettings"
-									}
-								},
-								"sink": {
-									"type": "AzurePostgreSQLSink",
-									"writeBatchSize": 1000000,
-									"writeBatchTimeout": "00:30:00",
-									"writeMethod": "CopyCommand"
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"mappings": [
-										{
-											"source": {
-												"path": "$['sn']"
-											},
-											"sink": {
-												"name": "identifier",
-												"type": "String"
-											}
-										},
-										{
-											"source": {
-												"path": "$['vendor']"
-											},
-											"sink": {
-												"name": "vendor",
-												"type": "String"
-											}
-										},
-										{
-											"source": {
-												"path": "$['poll_date']"
-											},
-											"sink": {
-												"name": "poll_date",
-												"type": "DateTime"
-											}
-										},
-										{
-											"source": {
-												"path": "$['data']"
-											},
-											"sink": {
-												"name": "data",
-												"type": "String"
-											}
-										}
-									],
-									"collectionReference": "",
-									"mapComplexValuesToString": true
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "raw_data",
-									"type": "DatasetReference"
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "raw_data_table_ds",
-									"type": "DatasetReference"
-								}
-							]
-						},
-						{
 							"name": "raw_data_check",
 							"description": "Check to see if raw_data.json exists.",
 							"type": "GetMetadata",
@@ -198,25 +110,116 @@
 						{
 							"name": "Check_metadata",
 							"type": "IfCondition",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "raw_data_check",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@",
+									"value": "@activity('raw_data_check').output.Exists",
 									"type": "Expression"
-								}
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Copy raw data to raw_data table_copy",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "JsonSource",
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "JsonReadSettings"
+												}
+											},
+											"sink": {
+												"type": "AzurePostgreSQLSink",
+												"writeBatchSize": 1000000,
+												"writeBatchTimeout": "00:30:00",
+												"writeMethod": "CopyCommand"
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"mappings": [
+													{
+														"source": {
+															"path": "$['sn']"
+														},
+														"sink": {
+															"name": "identifier",
+															"type": "String"
+														}
+													},
+													{
+														"source": {
+															"path": "$['vendor']"
+														},
+														"sink": {
+															"name": "vendor",
+															"type": "String"
+														}
+													},
+													{
+														"source": {
+															"path": "$['poll_date']"
+														},
+														"sink": {
+															"name": "poll_date",
+															"type": "DateTime"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data']"
+														},
+														"sink": {
+															"name": "data",
+															"type": "String"
+														}
+													}
+												],
+												"collectionReference": "",
+												"mapComplexValuesToString": true
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "raw_data",
+												"type": "DatasetReference"
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "raw_data_table_ds",
+												"type": "DatasetReference"
+											}
+										]
+									}
+								]
 							}
 						}
 					]
 				}
 			}
 		],
-		"variables": {
-			"fileExists": {
-				"type": "Boolean",
-				"defaultValue": false
-			}
-		},
 		"annotations": [],
 		"lastPublishTime": "2021-11-04T13:58:15Z"
 	},
