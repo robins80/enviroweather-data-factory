@@ -100,6 +100,7 @@
 								],
 								"storeSettings": {
 									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
@@ -164,8 +165,7 @@
 															"path": "$['sn']"
 														},
 														"sink": {
-															"name": "identifier",
-															"type": "String"
+															"name": "sn"
 														}
 													},
 													{
