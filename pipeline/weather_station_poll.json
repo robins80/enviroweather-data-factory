@@ -46,7 +46,7 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "Station Poll",
+							"name": "station_poll",
 							"type": "AzureFunctionActivity",
 							"dependsOn": [],
 							"policy": {
@@ -76,7 +76,7 @@
 							"type": "GetMetadata",
 							"dependsOn": [
 								{
-									"activity": "Station Poll",
+									"activity": "station_poll",
 									"dependencyConditions": [
 										"Succeeded"
 									]
