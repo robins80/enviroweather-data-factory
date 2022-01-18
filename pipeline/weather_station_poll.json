@@ -1,9 +1,9 @@
 {
-	"name": "Weather Station Poll",
+	"name": "weather_station_poll",
 	"properties": {
 		"activities": [
 			{
-				"name": "get_params",
+				"name": "get_stations",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -27,11 +27,11 @@
 				}
 			},
 			{
-				"name": "for_each",
+				"name": "get_station_data",
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "get_params",
+						"activity": "get_stations",
 						"dependencyConditions": [
 							"Succeeded"
 						]
