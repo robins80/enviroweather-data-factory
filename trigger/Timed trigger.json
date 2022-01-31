@@ -1,0 +1,25 @@
+{
+	"name": "Timed trigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "weather_station_poll",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 15,
+				"startTime": "2022-01-31T16:42:00Z",
+				"endTime": "2022-02-01T16:42:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
