@@ -40,7 +40,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('get_params').output.value",
+						"value": "@activity('get_stations').output.value",
 						"type": "Expression"
 					},
 					"isSequential": true,
