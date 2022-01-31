@@ -22,10 +22,6 @@
 		"Zentra_Function_ls_properties_typeProperties_functionAppUrl": {
 			"type": "string",
 			"defaultValue": "https://zentra-api-read.azurewebsites.net"
-		},
-		"zentra_function_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://zentra-api-read.azurewebsites.net"
 		}
 	},
 	"variables": {
@@ -33,13 +29,13 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Weather Station Poll')]",
+			"name": "[concat(parameters('factoryName'), '/weather_station_poll')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "get_params",
+						"name": "get_stations",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
@@ -64,11 +60,11 @@
 						}
 					},
 					{
-						"name": "for_each",
+						"name": "get_station_data",
 						"type": "ForEach",
 						"dependsOn": [
 							{
-								"activity": "get_params",
+								"activity": "get_stations",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -77,13 +73,13 @@
 						"userProperties": [],
 						"typeProperties": {
 							"items": {
-								"value": "@activity('get_params').output.value",
+								"value": "@activity('get_stations').output.value",
 								"type": "Expression"
 							},
 							"isSequential": true,
 							"activities": [
 								{
-									"name": "Station Poll",
+									"name": "station_poll",
 									"type": "AzureFunctionActivity",
 									"dependsOn": [],
 									"policy": {
@@ -109,11 +105,12 @@
 									}
 								},
 								{
-									"name": "Copy raw data to raw_data table",
-									"type": "Copy",
+									"name": "raw_data_check",
+									"description": "Check to see if raw_data.json exists.",
+									"type": "GetMetadata",
 									"dependsOn": [
 										{
-											"activity": "Station Poll",
+											"activity": "station_poll",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -128,82 +125,133 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"source": {
-											"type": "JsonSource",
-											"storeSettings": {
-												"type": "AzureBlobStorageReadSettings",
-												"recursive": true,
-												"enablePartitionDiscovery": false
-											},
-											"formatSettings": {
-												"type": "JsonReadSettings"
-											}
-										},
-										"sink": {
-											"type": "AzurePostgreSQLSink",
-											"writeBatchSize": 1000000,
-											"writeBatchTimeout": "00:30:00",
-											"writeMethod": "CopyCommand"
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"mappings": [
-												{
-													"source": {
-														"path": "$['identifier']"
-													},
-													"sink": {
-														"name": "identifier",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "$['vendor']"
-													},
-													"sink": {
-														"name": "vendor",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "$['poll_date']"
-													},
-													"sink": {
-														"name": "poll_date",
-														"type": "DateTime"
-													}
-												},
-												{
-													"source": {
-														"path": "$['data']"
-													},
-													"sink": {
-														"name": "data",
-														"type": "String"
-													}
-												}
-											],
-											"collectionReference": "",
-											"mapComplexValuesToString": true
-										}
-									},
-									"inputs": [
-										{
+										"dataset": {
 											"referenceName": "raw_data",
 											"type": "DatasetReference",
 											"parameters": {}
+										},
+										"fieldList": [
+											"exists"
+										],
+										"storeSettings": {
+											"type": "AzureBlobStorageReadSettings",
+											"recursive": true,
+											"enablePartitionDiscovery": false
+										},
+										"formatSettings": {
+											"type": "JsonReadSettings"
+										}
+									}
+								},
+								{
+									"name": "Check_metadata",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "raw_data_check",
+											"dependencyConditions": [
+												"Succeeded"
+											]
 										}
 									],
-									"outputs": [
-										{
-											"referenceName": "raw_data_table_ds",
-											"type": "DatasetReference",
-											"parameters": {}
-										}
-									]
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@activity('raw_data_check').output.Exists",
+											"type": "Expression"
+										},
+										"ifTrueActivities": [
+											{
+												"name": "Copy raw data to raw_data table_copy",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "JsonSource",
+														"storeSettings": {
+															"type": "AzureBlobStorageReadSettings",
+															"recursive": true,
+															"enablePartitionDiscovery": false
+														},
+														"formatSettings": {
+															"type": "JsonReadSettings"
+														}
+													},
+													"sink": {
+														"type": "AzurePostgreSQLSink",
+														"writeBatchSize": 1000000,
+														"writeBatchTimeout": "00:30:00",
+														"writeMethod": "CopyCommand"
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"path": "$['sn']"
+																},
+																"sink": {
+																	"name": "sn"
+																}
+															},
+															{
+																"source": {
+																	"path": "$['vendor']"
+																},
+																"sink": {
+																	"name": "vendor",
+																	"type": "String"
+																}
+															},
+															{
+																"source": {
+																	"path": "$['poll_date']"
+																},
+																"sink": {
+																	"name": "poll_date",
+																	"type": "DateTime"
+																}
+															},
+															{
+																"source": {
+																	"path": "$['data']"
+																},
+																"sink": {
+																	"name": "data",
+																	"type": "String"
+																}
+															}
+														],
+														"collectionReference": "",
+														"mapComplexValuesToString": true
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "raw_data",
+														"type": "DatasetReference",
+														"parameters": {}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "raw_data_table_ds",
+														"type": "DatasetReference",
+														"parameters": {}
+													}
+												]
+											}
+										]
+									}
 								}
 							]
 						}
@@ -396,19 +444,35 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/zentra_function')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/Timed trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "HttpServer",
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "weather_station_poll",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
 				"typeProperties": {
-					"url": "[parameters('zentra_function_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 15,
+						"startTime": "2022-01-31T16:42:00Z",
+						"endTime": "2022-02-01T16:42:00Z",
+						"timeZone": "UTC"
+					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/weather_station_poll')]"
+			]
 		}
 	]
 }

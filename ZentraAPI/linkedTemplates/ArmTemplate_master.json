@@ -23,10 +23,6 @@
 			"type": "string",
 			"defaultValue": "https://zentra-api-read.azurewebsites.net"
 		},
-		"zentra_function_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://zentra-api-read.azurewebsites.net"
-		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -65,9 +61,6 @@
 					},
 					"Zentra_Function_ls_properties_typeProperties_functionAppUrl": {
 						"value": "[parameters('Zentra_Function_ls_properties_typeProperties_functionAppUrl')]"
-					},
-					"zentra_function_properties_typeProperties_url": {
-						"value": "[parameters('zentra_function_properties_typeProperties_url')]"
 					}
 				}
 			},

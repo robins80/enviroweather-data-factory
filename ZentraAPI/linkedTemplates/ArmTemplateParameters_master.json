@@ -17,9 +17,6 @@
 		"Zentra_Function_ls_properties_typeProperties_functionAppUrl": {
 			"value": "https://zentra-api-read.azurewebsites.net"
 		},
-		"zentra_function_properties_typeProperties_url": {
-			"value": "https://zentra-api-read.azurewebsites.net"
-		},
 		"containerUri": {
 			"value": ""
 		},
