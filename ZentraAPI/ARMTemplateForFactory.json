@@ -449,7 +449,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
+				"runtimeState": "Started",
 				"pipelines": [
 					{
 						"pipelineReference": {
@@ -464,7 +464,8 @@
 					"recurrence": {
 						"frequency": "Minute",
 						"interval": 15,
-						"startTime": "2022-01-31T13:30:00",
+						"startTime": "2022-02-09T14:45:00",
+						"endTime": "2022-02-09T15:05:00",
 						"timeZone": "Eastern Standard Time"
 					}
 				}
