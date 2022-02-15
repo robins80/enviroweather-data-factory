@@ -137,7 +137,31 @@
 						"scale": 0
 					},
 					{
-						"name": "identifier",
+						"name": "sn",
+						"type": "text",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "manufacturer",
+						"type": "text",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "token",
+						"type": "text",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "apikey",
+						"type": "text",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "apisec",
 						"type": "text",
 						"precision": 0,
 						"scale": 0
@@ -149,37 +173,7 @@
 						"scale": 0
 					},
 					{
-						"name": "api_token",
-						"type": "text",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "api_key",
-						"type": "text",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "api_sec",
-						"type": "text",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "api_provider",
-						"type": "text",
-						"precision": 0,
-						"scale": 0
-					},
-					{
 						"name": "description",
-						"type": "text",
-						"precision": 0,
-						"scale": 0
-					},
-					{
-						"name": "api_url",
 						"type": "text",
 						"precision": 0,
 						"scale": 0
@@ -187,6 +181,48 @@
 					{
 						"name": "update_freq",
 						"type": "integer",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "client_id",
+						"type": "text",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "client_secret",
+						"type": "text",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "ret_form",
+						"type": "text",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "user_id",
+						"type": "text",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "username",
+						"type": "text",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "password",
+						"type": "text",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "time_zone",
+						"type": "text",
 						"precision": 0,
 						"scale": 0
 					}
