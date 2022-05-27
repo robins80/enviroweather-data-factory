@@ -109,7 +109,7 @@
 							}
 						},
 						{
-							"name": "Check_metadata",
+							"name": "Does raw_data exist",
 							"type": "IfCondition",
 							"dependsOn": [
 								{
@@ -209,6 +209,171 @@
 										"outputs": [
 											{
 												"referenceName": "raw_data_table_ds",
+												"type": "DatasetReference"
+											}
+										]
+									}
+								]
+							}
+						},
+						{
+							"name": "parsed_data_check",
+							"description": "Check to see if parsed.data exists.",
+							"type": "GetMetadata",
+							"dependsOn": [
+								{
+									"activity": "Does raw_data exist",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "parsed_data",
+									"type": "DatasetReference"
+								},
+								"fieldList": [
+									"exists"
+								],
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							}
+						},
+						{
+							"name": "Does parsed_data exist",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "parsed_data_check",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@activity('parsed_data_check').output.Exists",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Copy parsed date to observations table",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "JsonSource",
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "JsonReadSettings"
+												}
+											},
+											"sink": {
+												"type": "AzurePostgreSQLSink",
+												"writeBatchSize": 1000000,
+												"writeBatchTimeout": "00:30:00",
+												"writeMethod": "CopyCommand"
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"mappings": [
+													{
+														"source": {
+															"path": "$['station_id']"
+														},
+														"sink": {
+															"name": "station_id",
+															"type": "String"
+														}
+													},
+													{
+														"source": {
+															"path": "$['request_datetime']"
+														},
+														"sink": {
+															"name": "request_datetime",
+															"type": "DateTime"
+														}
+													},
+													{
+														"source": {
+															"path": "$['data_datetime']"
+														},
+														"sink": {
+															"name": "data_datetime",
+															"type": "DateTime"
+														}
+													},
+													{
+														"source": {
+															"path": "$['atemp']"
+														},
+														"sink": {
+															"name": "atemp",
+															"type": "Double"
+														}
+													},
+													{
+														"source": {
+															"path": "$['pcpn']"
+														},
+														"sink": {
+															"name": "pcpn",
+															"type": "Double"
+														}
+													},
+													{
+														"source": {
+															"path": "$['relh']"
+														},
+														"sink": {
+															"name": "relh",
+															"type": "Double"
+														}
+													}
+												],
+												"collectionReference": "",
+												"mapComplexValuesToString": true
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "parsed_data",
+												"type": "DatasetReference"
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "observations_table_ds",
 												"type": "DatasetReference"
 											}
 										]

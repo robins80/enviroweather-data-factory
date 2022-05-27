@@ -1,0 +1,20 @@
+{
+	"name": "parsed_data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "zentra_blob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "parsed.data",
+				"container": "zentra"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
