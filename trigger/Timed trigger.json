@@ -16,7 +16,7 @@
 			"recurrence": {
 				"frequency": "Minute",
 				"interval": 15,
-				"startTime": "2022-02-09T15:55:00",
+				"startTime": "2022-06-10T14:00:00",
 				"endTime": "2022-08-31T00:32:00",
 				"timeZone": "Eastern Standard Time"
 			}
