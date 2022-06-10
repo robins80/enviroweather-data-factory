@@ -74,6 +74,51 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/observations_table_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "enviroweather_db_ls",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "public",
+					"table": "observations"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/enviroweather_db_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/parsed_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "zentra_blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "parsed.data",
+						"container": "zentra"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/zentra_blob')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/raw_data')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -352,7 +397,7 @@
 									}
 								},
 								{
-									"name": "Check_metadata",
+									"name": "Does raw_data exist",
 									"type": "IfCondition",
 									"dependsOn": [
 										{
@@ -460,6 +505,174 @@
 											}
 										]
 									}
+								},
+								{
+									"name": "parsed_data_check",
+									"description": "Check to see if parsed.data exists.",
+									"type": "GetMetadata",
+									"dependsOn": [
+										{
+											"activity": "Does raw_data exist",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "parsed_data",
+											"type": "DatasetReference",
+											"parameters": {}
+										},
+										"fieldList": [
+											"exists"
+										],
+										"storeSettings": {
+											"type": "AzureBlobStorageReadSettings",
+											"recursive": true,
+											"enablePartitionDiscovery": false
+										},
+										"formatSettings": {
+											"type": "JsonReadSettings"
+										}
+									}
+								},
+								{
+									"name": "Does parsed_data exist",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "parsed_data_check",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@activity('parsed_data_check').output.Exists",
+											"type": "Expression"
+										},
+										"ifTrueActivities": [
+											{
+												"name": "Copy parsed date to observations table",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "JsonSource",
+														"storeSettings": {
+															"type": "AzureBlobStorageReadSettings",
+															"recursive": true,
+															"enablePartitionDiscovery": false
+														},
+														"formatSettings": {
+															"type": "JsonReadSettings"
+														}
+													},
+													"sink": {
+														"type": "AzurePostgreSQLSink",
+														"writeBatchSize": 1000000,
+														"writeBatchTimeout": "00:30:00",
+														"writeMethod": "CopyCommand"
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"path": "$['station_id']"
+																},
+																"sink": {
+																	"name": "station_id",
+																	"type": "String"
+																}
+															},
+															{
+																"source": {
+																	"path": "$['request_datetime']"
+																},
+																"sink": {
+																	"name": "request_datetime",
+																	"type": "DateTime"
+																}
+															},
+															{
+																"source": {
+																	"path": "$['data_datetime']"
+																},
+																"sink": {
+																	"name": "data_datetime",
+																	"type": "DateTime"
+																}
+															},
+															{
+																"source": {
+																	"path": "$['atemp']"
+																},
+																"sink": {
+																	"name": "atemp",
+																	"type": "Double"
+																}
+															},
+															{
+																"source": {
+																	"path": "$['pcpn']"
+																},
+																"sink": {
+																	"name": "pcpn",
+																	"type": "Double"
+																}
+															},
+															{
+																"source": {
+																	"path": "$['relh']"
+																},
+																"sink": {
+																	"name": "relh",
+																	"type": "Double"
+																}
+															}
+														],
+														"collectionReference": "",
+														"mapComplexValuesToString": true
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "parsed_data",
+														"type": "DatasetReference",
+														"parameters": {}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "observations_table_ds",
+														"type": "DatasetReference",
+														"parameters": {}
+													}
+												]
+											}
+										]
+									}
 								}
 							]
 						}
@@ -476,7 +689,9 @@
 				"[concat(variables('factoryId'), '/datasets/stations_table_ds')]",
 				"[concat(variables('factoryId'), '/linkedServices/Zentra_Function_ls')]",
 				"[concat(variables('factoryId'), '/datasets/raw_data')]",
-				"[concat(variables('factoryId'), '/datasets/raw_data_table_ds')]"
+				"[concat(variables('factoryId'), '/datasets/parsed_data')]",
+				"[concat(variables('factoryId'), '/datasets/raw_data_table_ds')]",
+				"[concat(variables('factoryId'), '/datasets/observations_table_ds')]"
 			]
 		},
 		{
@@ -500,8 +715,8 @@
 					"recurrence": {
 						"frequency": "Minute",
 						"interval": 15,
-						"startTime": "2022-02-09T15:55:00",
-						"endTime": "2022-02-09T16:32:00",
+						"startTime": "2022-06-10T14:00:00",
+						"endTime": "2022-08-31T00:32:00",
 						"timeZone": "Eastern Standard Time"
 					}
 				}
